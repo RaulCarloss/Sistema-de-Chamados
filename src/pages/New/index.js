@@ -2,19 +2,66 @@ import Header from '../../components/Header'
 import Title from '../../components/Title'
 import './new.css'
 import { FiPlusCircle } from 'react-icons/fi'
-import { useState } from 'react' 
+import { useState, useEffect, useContext } from 'react' 
+import { AuthContext } from '../../contexts/auth'
+import { db } from '../../services/firebaseConnection' 
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore'
 
 
 
+const listRef = collection(db, "customers");
 
 export default function New(){
+    const { user } = useContext(AuthContext);
     const [customers, setCustomers] = useState([])
+    const [loadCustome, setLoadCustome] = useState(true);
+    const [customerSelected, setCustomerSelected] = useState(0)
     const [complemento, setComplemento] = useState('')
     const [assunto, setAssunto] = useState('Suporte')
     const [status, setStatus] = useState('Aberto')
 
+    useEffect(() => {
+        async function loadCustome(){
+            const querySnapshot = await getDoc(listRef)
+            .then( (snapshot) => {
+                let lista = [];
+
+                snapshot.forEach( (doc) => {
+                    lista.push({
+                        id:doc.id,
+                        nomeFantasia: doc.data().nomeFantasia
+                    })
+                })
+
+                if(snapshot.docs.size === 0){
+                    console.log("NENHUMA EMPRESA ENCONTRADA");
+                    setCustomers([ {id: '1', nomeFantasia: 'FREELA'} ])
+                    setLoadCustome(false);
+                    return;
+                }
+
+                setCustomers(lista);
+                setLoadCustome(false)
+            })
+            .catch( (error) => {
+                console.log("ERRO AO BUSCAR OS CLIENTES", error)
+                setLoadCustome(false)
+                setCustomers([ {id: '1', nomeFantasia: 'FREELA'} ])
+            })
+        }
+
+        loadCustome();
+    }, [])
+
     function handleOptionChange(e){
         setStatus(e.target.value);
+    }
+
+    function handleChangeSelect(e){
+        setAssunto(e.target.value);
+    }
+    function handleChangeCustomer(e){
+        setCustomerSelected(e.target.value)
     }
 
     return(
@@ -29,8 +76,26 @@ export default function New(){
 
                 <div className='container'>                    
                     <form>
-                        <label>Clientes</label>
-                        <select>
+
+                    <label>Clentes</label>
+                        {
+                            loadCustome ? (
+                                <input type='text' disabled={true} value="Carregando..." />
+                            ) : (
+                                <select value={customerSelected} onChange={handleChangeCustomer} >
+                                    {customers.map( (item, index) => {
+                                       return(
+                                        <option key={index} value={index}>
+                                            {item.nomeFantasia}
+                                        </option>
+                                       ) 
+                                    })}
+                                </select>
+                            )
+                        }
+
+                        <label>Assunto</label>
+                        <select value={assunto} onChange={handleChangeSelect}>
                             <option value='Suporte'>Suporte</option>
                             <option value='Visita Tecnica'>Visita Tecnica</option>
                             <option value='Financeiro'>Financeiro</option>
