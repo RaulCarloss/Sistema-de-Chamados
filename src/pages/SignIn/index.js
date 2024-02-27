@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react'
 import './signin.css'
+
 import logo from '../../assets/logo.png'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
@@ -8,6 +9,7 @@ import { AuthContext } from '../../contexts/auth'
 export default function SignIn(){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const { signIn, loadingAuth } = useContext(AuthContext)
 
   async function handleSignIn(e){
@@ -18,6 +20,7 @@ export default function SignIn(){
     }
 
   }
+
 
   return(
     <div className="container-center">

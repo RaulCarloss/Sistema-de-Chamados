@@ -3,18 +3,19 @@ import { Navigate } from 'react-router-dom'
 import { AuthContext } from '../contexts/auth'
 
 export default function Private({ children }){
-    const { signed, loading } = useContext(AuthContext);
-    
-    if(loading){
-        return(
-            <div></div>
-        )
-    }
+  const { signed, loading } = useContext(AuthContext);
 
-    if(!signed){
-        return <Navigate to="/" />
-    }
+  if(loading){
+    return(
+      <div></div>
+    )
+  }
 
-    return children;
+  if(!signed){
+    return  <Navigate to="/" />
+  }
+
+
+  return children;
 
 }

@@ -2,8 +2,9 @@ import { useState, createContext, useEffect } from 'react';
 import { auth, db } from '../services/firebaseConnection';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
+
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'
 
 export const AuthContext = createContext({});
 
@@ -14,6 +15,7 @@ function AuthProvider({ children }){
 
   const navigate = useNavigate();
 
+
   useEffect(() => {
     async function loadUser(){
       const storageUser = localStorage.getItem('@ticketsPRO')
@@ -23,44 +25,46 @@ function AuthProvider({ children }){
         setLoading(false);
       }
 
+
       setLoading(false);
 
     }
 
     loadUser();
-
   }, [])
+
 
   async function signIn(email, password){
     setLoadingAuth(true);
 
     await signInWithEmailAndPassword(auth, email, password)
     .then( async (value) => {
-        let uid = value.user.uid;
+      let uid = value.user.uid;
 
-        const docRef = doc(db, "users", uid);
-        const docSnap = await getDoc(docRef)
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef)
 
-        let data = {
-            uid: uid,
-            nome: docSnap.data().nome,
-            email: value.user.email,
-            avatarUrl: docSnap.data().avatarUrl
-        }
+      let data = {
+        uid: uid,
+        nome: docSnap.data().nome,
+        email: value.user.email,
+        avatarUrl: docSnap.data().avatarUrl
+      }
 
-        setUser(data);
-        storageUser(data);
-        setLoadingAuth(false);
-        toast.success("Bem vindo(a) de volta!")
-        navigate("/dashboard")
+      setUser(data);
+      storageUser(data);
+      setLoadingAuth(false);
+      toast.success("Bem-vindo(a) de volta!")
+      navigate("/dashboard")
     })
     .catch((error) => {
-        console.log(error);
-        setLoadingAuth(false);
-        toast.error("Ops algo deu errado!")
-    })
+      console.log(error);
+      setLoadingAuth(false);
+      toast.error("Ops algo deu errado!");
+    }) 
 
   }
+
 
   // Cadastrar um novo user
   async function signUp(email, password, name){
@@ -86,10 +90,11 @@ function AuthProvider({ children }){
           setUser(data);
           storageUser(data);
           setLoadingAuth(false);
-          toast.success("Seja bem-vindo ao sistema")
+          toast.success("Seja bem-vindo ao sistema!")
           navigate("/dashboard")
           
         })
+
 
     })
     .catch((error) => {
@@ -98,6 +103,7 @@ function AuthProvider({ children }){
     })
 
   }
+
 
   function storageUser(data){
     localStorage.setItem('@ticketsPRO', JSON.stringify(data))
@@ -121,7 +127,6 @@ function AuthProvider({ children }){
         loading,
         storageUser,
         setUser
-        
       }}
     >
       {children}
