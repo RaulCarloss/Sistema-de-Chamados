@@ -58,6 +58,23 @@ export default function Dashboard(){
     }
  }
 
+ if(loading){
+  return(
+    <div>
+      <Header/>
+
+      <div className='content'> 
+        <Title name="Tickets">
+          <FiMessageSquare size={25} />
+        </Title>
+        <div>
+          <span>Buscando chamados...</span>
+        </div>
+      </div>
+    </div>
+  )
+ }
+
   return(
     <div>
       <Header/>
